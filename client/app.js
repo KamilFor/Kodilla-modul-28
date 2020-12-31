@@ -1,3 +1,6 @@
+// import socket
+const socket = io();
+
 // Constant downloaded from index.html
 const loginForm = document.getElementById('welcome-form'); // Welcome form
 const messageSection = document.getElementById('messages-section'); // Section Message
@@ -7,6 +10,7 @@ const userNameInput = document.getElementById('username'); // Input with usernam
 const messageContentInput = document.getElementById('message-content'); // Input with content of messages
 
 const userName = [];
+socket.on('message', ({ author, content }) => addMessage(author, content));
 
 // Function Login (work with LoginForm)
 const login = (e) => {
@@ -14,6 +18,7 @@ const login = (e) => {
   if (userNameInput.value.length == 0) alert("Put your name and don't leave empty spaces");
   else {
     userName.push(userNameInput.value);
+    socket.emit('joinRoom', userNameInput.value);
     loginForm.classList.remove('show');
     messageSection.classList.add('show');
   }
@@ -25,7 +30,9 @@ const sendMessage = (e) => {
   // Validation
   if (messageContentInput.value.length == 0) alert("Put your name and don't leave empty spaces");
   else {
+    // Function addMessage
     addMessage(userName, messageContentInput.value);
+    socket.emit('message', { author: userName, content: messageContentInput.value });
     messageContentInput.value = '';
   }
 };
@@ -58,5 +65,3 @@ addMessageForms.addEventListener('submit', (e) => {
   // Initiation Sending Messages
   sendMessage(e);
 });
-
-// Function addMessage
